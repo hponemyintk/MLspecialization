@@ -1,0 +1,39 @@
+name: ml
+channels:
+  - conda-forge
+  - apple
+  - defaults
+dependencies:
+  - python
+  - setuptools
+  - pip>=23.1
+  - numpy
+  - scipy
+  - pandas
+  - wheel
+  - ipywidgets
+  - matplotlib
+  - scikit-learn
+  - pytorch
+  - torchvision
+  - ipympl
+  - nodejs
+  - gym
+  - ipykernel
+  - imageio
+  - tabulate
+  - statsmodels
+  - pyvirtualdisplay
+  - tensorflow-deps
+  - jupyterlab
+#  - sympy
+
+  - pip:
+    - tensorflow-macos
+    - tensorflow-metal  ## optional, but recommended
+
+prefix: /opt/anaconda3
+
+
+# python -m ipykernel install --user --name=ml
+# jupyter kernelspec uninstall ml
