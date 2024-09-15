@@ -30,6 +30,7 @@ dependencies:
 #  - sympy
   - bokeh
   - plotly
+  - gym-box2d
 
   - pip:
     - tensorflow-macos
