@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.activations import relu, linear
 from tensorflow.keras.layers import Dense
 
@@ -7,20 +8,54 @@ def test_tower(target):
     num_outputs = 32
     i = 0
     assert len(target.layers) == 3, f"Wrong number of layers. Expected 3 but got {len(target.layers)}"
-    expected = [[Dense, [None, 256], relu],
-                [Dense, [None, 128], relu],
-                [Dense, [None, num_outputs], linear]]
+    expected = [
+        [tf.keras.layers.Dense, [None, 256], tf.keras.activations.relu],
+        [tf.keras.layers.Dense, [None, 128], tf.keras.activations.relu],
+        [tf.keras.layers.Dense, [None, num_outputs], tf.keras.activations.linear],
+    ]
 
-    for layer in target.layers:
-        assert type(layer) == expected[i][0], \
-            f"Wrong type in layer {i}. Expected {expected[i][0]} but got {type(layer)}"
-        assert layer.output.shape.as_list() == expected[i][1], \
-            f"Wrong number of units in layer {i}. Expected {expected[i][1]} but got {layer.output.shape.as_list()}"
-        assert layer.activation == expected[i][2], \
-            f"Wrong activation in layer {i}. Expected {expected[i][2]} but got {layer.activation}"
-        i = i + 1
+    for layer, (exp_type, exp_shape, exp_activation) in zip(target.layers, expected):
+        # type check
+        assert isinstance(layer, exp_type), \
+            f"Wrong type in layer {i}. Expected {exp_type} but got {type(layer)}"
+
+        # normalize shape (handle tuple or TensorShape)
+        out_shape = layer.output.shape
+        if hasattr(out_shape, "as_list"):
+            out_shape = out_shape.as_list()
+        else:
+            out_shape = list(out_shape)
+
+        assert out_shape == exp_shape, \
+            f"Wrong number of units in layer {i}. Expected {exp_shape} but got {out_shape}"
+
+        # activation check
+        assert layer.activation == exp_activation, \
+            f"Wrong activation in layer {i}. Expected {exp_activation} but got {layer.activation}"
+
+        i += 1
 
     print("\033[92mAll tests passed!")
+
+
+# def test_tower(target):
+#     num_outputs = 32
+#     i = 0
+#     assert len(target.layers) == 3, f"Wrong number of layers. Expected 3 but got {len(target.layers)}"
+#     expected = [[Dense, [None, 256], relu],
+#                 [Dense, [None, 128], relu],
+#                 [Dense, [None, num_outputs], linear]]
+
+#     for layer in target.layers:
+#         assert type(layer) == expected[i][0], \
+#             f"Wrong type in layer {i}. Expected {expected[i][0]} but got {type(layer)}"
+#         assert layer.output.shape.as_list() == expected[i][1], \
+#             f"Wrong number of units in layer {i}. Expected {expected[i][1]} but got {layer.output.shape.as_list()}"
+#         assert layer.activation == expected[i][2], \
+#             f"Wrong activation in layer {i}. Expected {expected[i][2]} but got {layer.activation}"
+#         i = i + 1
+
+#     print("\033[92mAll tests passed!")
 
 
 def test_sq_dist(target):
