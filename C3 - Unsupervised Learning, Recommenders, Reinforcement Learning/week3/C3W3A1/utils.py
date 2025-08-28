@@ -112,28 +112,55 @@ def display_table(initial_state, action, next_state, reward, done):
     return table
 
 
+# def embed_mp4(filename):
+#     """Embeds an mp4 file in the notebook."""
+#     video = open(filename,'rb').read()
+#     b64 = base64.b64encode(video)
+#     tag = '''
+#     <video width="840" height="480" controls>
+#     <source src="data:video/mp4;base64,{0}" type="video/mp4">
+#     Your browser does not support the video tag.
+#     </video>'''.format(b64.decode())
+#     return IPython.display.HTML(tag)
+        
+        
+# def create_video(filename, env, q_network, fps=30):
+#     with imageio.get_writer(filename, fps=fps) as video:
+#         done = False
+#         state = env.reset()
+#         frame = env.render()
+#         video.append_data(frame)
+#         while not done:    
+#             state = np.expand_dims(state, axis=0)
+#             q_values = q_network(state)
+#             action = np.argmax(q_values.numpy()[0])
+#             state, _, done, _ = env.step(action)
+#             frame = env.render(mode="rgb_array")
+#             video.append_data(frame)
+
+from IPython.display import HTML
+
 def embed_mp4(filename):
-    """Embeds an mp4 file in the notebook."""
-    video = open(filename,'rb').read()
-    b64 = base64.b64encode(video)
-    tag = '''
+    """Embeds an mp4 file in the notebook without using base64."""
+    tag = f'''
     <video width="840" height="480" controls>
-    <source src="data:video/mp4;base64,{0}" type="video/mp4">
-    Your browser does not support the video tag.
-    </video>'''.format(b64.decode())
-    return IPython.display.HTML(tag)
-        
-        
+        <source src="{filename}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    '''
+    return HTML(tag)
+
+    
 def create_video(filename, env, q_network, fps=30):
     with imageio.get_writer(filename, fps=fps) as video:
         done = False
-        state = env.reset()
-        frame = env.render(mode="rgb_array")
+        state, _ = env.reset()
+        frame = env.render()
         video.append_data(frame)
         while not done:    
             state = np.expand_dims(state, axis=0)
             q_values = q_network(state)
             action = np.argmax(q_values.numpy()[0])
-            state, _, done, _ = env.step(action)
-            frame = env.render(mode="rgb_array")
+            state, _, done, _, _ = env.step(action)
+            frame = env.render()
             video.append_data(frame)
